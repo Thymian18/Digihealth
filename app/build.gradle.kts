@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("jacoco")
 }
 
 android {
@@ -27,6 +28,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
         }
     }
     compileOptions {
@@ -59,7 +64,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+
     testImplementation("junit:junit:4.13.2")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test:runner:1.5.2")
@@ -67,6 +74,47 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
+// added from operations guide
+//tasks.withType(Test::class.java) {
+//    useJUnitPlatform()
+//}
+//
+//tasks.create("jacocoTestReport", JacocoReport::class.java) {
+//    dependsOn(tasks["testDebugUnitTest"], tasks["createDebugCoverageReport"])
+//
+//    reports.xml.required.set(true)
+//    reports.html.required.set(true)
+//
+//    val debugTree = fileTree("$project.buildDir/tmp/kotlin-classes/debug").apply {
+//        setExcludes(
+//            listOf(
+//                "**/R.class",
+//                "**/R$*.class",
+//                "**/BuildConfig.*",
+//                "**/Manifest*.*",
+//                "**/*Test*.*",
+//                "android/**/*.*"
+//            )
+//        )
+//    }
+//
+//    val mainSrc = "$project.projectDir/src/main/java"
+//
+//    sourceDirectories.setFrom(files(listOf(mainSrc)))
+//    classDirectories.setFrom(files(listOf(debugTree)))
+//    executionData.setFrom(fileTree(project.buildDir).include(
+//        "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+//        "outputs/code_coverage/debugAndroidTest/connected/*/coverage.ec"
+//    ))
+//
+//    // ???
+//}
+//
+//tasks.connectedCheck {
+//    finalizedBy("jacocoTestReport")
+//}
