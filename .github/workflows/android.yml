@@ -49,6 +49,20 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
       
+    - name: Run unit tests
+      run: ./gradlew test --stacktrace
+    - name: Run detekt
+      run: ./gradlew detektCheck
+      
+    - name: Instrumentation Tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 33
+        target: default
+        arch: x86
+        profile: Pixel 2
+        script: ./gradlew connectedCheck --stacktrace
+      
     - name: Wait for screen record to finish
       run: |
         pkill -2 -x adb
@@ -57,10 +71,11 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: android-test-results
+        name: Test-Reports
         path: |
           *.h264
           ./app/build/reports/lint-results-debug.xml
           ./app/build/test-results/**/*.xml
           ./app/build/outputs/**/*.xml
+        if: always()
      
