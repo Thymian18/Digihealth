@@ -94,7 +94,7 @@ jobs:
         run: ./gradlew test --stacktrace
 
       - name: Instrumentation Tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v3
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
@@ -134,14 +134,3 @@ jobs:
 #          pkill -2 -x adb
 #          sleep 2
 #
-#      - name: Upload artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: Test-Reports
-#          path: |
-#            *.h264
-#            ./app/build/reports/lint-results-debug.xml
-#            ./app/build/test-results/**/*.xml
-#            ./app/build/outputs/**/*.xml
-#          if: always()
-
