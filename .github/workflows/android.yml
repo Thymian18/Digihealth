@@ -49,7 +49,7 @@ jobs:
     #- name: Wait for AVD to boot
     #  run: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 3; done; input keyevent 82'
 
-test:
+  test:
     runs-on: ubuntu-latest
     needs: build
     strategy:
