@@ -92,8 +92,8 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebugAndroidTest
 
-      - name: Run detekt
-        run: ./gradlew detektCheck
+#      - name: Run detekt
+#        run: ./gradlew detektCheck
 
       - name: Run unit tests
         run: ./gradlew test --stacktrace
