@@ -21,4 +21,10 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.github.thymian18.digihealth", appContext.packageName)
     }
+
+    @Test
+    fun testGreeting() {
+        val greeting = "Hello Android!"
+        assertEquals("Hello Android!", greeting)
+    }
 }
