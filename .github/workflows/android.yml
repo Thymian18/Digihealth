@@ -20,14 +20,14 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Install emulator dependencies
-      run: sdkmanager --install "system-images;android-30;google_apis;x86"
-    - name: Create AVD
-      run: echo no | avdmanager create avd --force --name emulator --package "system-images;android-30;google_apis;x86"
-    - name: Start AVD in the background
-      run: $ANDROID_HOME/emulator/emulator -avd emulator -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -no-window -camera-back none
-    - name: Wait for AVD to boot
-      run: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 3; done; input keyevent 82'
+    #- name: Install emulator dependencies
+    #  run: sdkmanager --install "system-images;android-30;google_apis;x86"
+    #- name: Create AVD
+    #  run: echo no | avdmanager create avd --force --name emulator --package "system-images;android-30;google_apis;x86"
+    #- name: Start AVD in the background
+    #  run: $ANDROID_HOME/emulator/emulator -avd emulator -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -no-window -camera-back none
+    #- name: Wait for AVD to boot
+    #  run: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 3; done; input keyevent 82'
 
     - name: Grant execute permission for gradlew (assemble_instrumented_tests_script)
       run: | 
