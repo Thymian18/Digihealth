@@ -61,7 +61,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        api-level: [ 33 ] # add more API levels here to run tests on more emulators
+        api-level: [ 30 ] # add more API levels here to run tests on more emulators
         target: [ default ]
         arch: [ x86 ]
         profile: [ Pixel 2 ]
