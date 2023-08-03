@@ -1,13 +1,23 @@
 package com.github.thymian18.digihealth
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.thymian18.digihealth.ui.theme.DigihealthTheme
 
@@ -29,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    WelcomePage()
+                    WelcomePage(this)
                 }
             }
         }
@@ -49,7 +58,45 @@ fun Title(text: String) {
 }
 
 @Composable
-fun WelcomePage() {
+fun BottomRow(
+    context: Context,
+) {
+    BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primary,
+        actions = {
+            IconButton(
+                onClick = {
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Home, contentDescription = "Home")
+            }
+            IconButton(
+                onClick = {
+                    val intent = Intent(context, SettingsActivity::class.java)
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
+            }
+            IconButton(
+                onClick = {
+                    val intent = Intent(context, InfoActivity::class.java)
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Info, contentDescription = "Info")
+            }
+        },
+    )
+}
+
+@Composable
+fun WelcomePage(context: Context) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -58,6 +105,14 @@ fun WelcomePage() {
         Spacer(modifier = Modifier.padding(top = 40.dp))
         WelcomeTextRow()
     }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        BottomRow(context = context)
+    }
+
 }
 
 @Composable
@@ -81,10 +136,3 @@ fun WelcomeTextRow() {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DigihealthTheme {
-        WelcomePage()
-    }
-}
