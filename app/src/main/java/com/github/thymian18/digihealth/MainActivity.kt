@@ -24,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.thymian18.digihealth.ui.theme.DigihealthTheme
@@ -32,7 +34,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DigihealthTheme {
+            DigihealthTheme(dynamicColor = false) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -69,7 +71,9 @@ fun BottomRow(
                     val intent = Intent(context, MainActivity::class.java)
                     context.startActivity(intent)
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("HomeButton")
             ) {
                 Icon(Icons.Filled.Home, contentDescription = "Home")
             }
@@ -78,7 +82,9 @@ fun BottomRow(
                     val intent = Intent(context, SettingsActivity::class.java)
                     context.startActivity(intent)
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("SettingsButton")
             ) {
                 Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
@@ -87,7 +93,9 @@ fun BottomRow(
                     val intent = Intent(context, InfoActivity::class.java)
                     context.startActivity(intent)
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("InfoButton")
             ) {
                 Icon(Icons.Filled.Info, contentDescription = "Info")
             }

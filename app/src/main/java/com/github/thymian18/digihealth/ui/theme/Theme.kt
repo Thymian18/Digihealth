@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+// TODO: Adapt those color schemes
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -22,8 +23,8 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PurpleGrey1,
-    secondary = PurpleGrey40,
+    primary = PurpleGrey40,
+    secondary = PurpleGrey1,
     tertiary = Pink40
 
     /* Other default colors to override
@@ -47,11 +48,15 @@ fun DigihealthTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
+            println("Entering dynamic color scheme")
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> {
+            println("Entering light color scheme")
+            LightColorScheme
+        }
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
