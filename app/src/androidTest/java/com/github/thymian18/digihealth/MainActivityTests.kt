@@ -37,7 +37,7 @@ class MainActivityTests {
         ActivityScenario.launch<MainActivity>(intent).use {
             composeTestRule.onNodeWithTag("HomeButton")
                 .assertExists()
-            composeTestRule.onNodeWithTag("SettingsButton")
+            composeTestRule.onNodeWithTag("ConfigurationsButton")
                 .assertExists()
             composeTestRule.onNodeWithTag("InfoButton")
                 .assertExists()
@@ -48,7 +48,7 @@ class MainActivityTests {
     fun mainCanNavigateToSettings() {
         val intent = Intent(getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent).use {
-            composeTestRule.onNodeWithTag("SettingsButton")
+            composeTestRule.onNodeWithTag("ConfigurationsButton")
                 .performClick()
 
             Intents.intended(hasComponent(SettingsActivity::class.java.name))

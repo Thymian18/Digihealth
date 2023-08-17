@@ -24,8 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.thymian18.digihealth.ui.theme.DigihealthTheme
@@ -84,9 +84,10 @@ fun BottomRow(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .testTag("SettingsButton")
+                    .testTag("ConfigurationsButton")
             ) {
-                Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                //Icon(Icons.Filled.Settings, contentDescription = "Configurations")
+                Icon(painter = painterResource(id = R.drawable.baseline_dataset_24), contentDescription = "Configurations")
             }
             IconButton(
                 onClick = {

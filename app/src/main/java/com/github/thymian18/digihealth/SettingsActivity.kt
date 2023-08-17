@@ -38,7 +38,7 @@ fun SettingsPage(context: Context) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Title(text = "Settings")
+        Title(text = "Configurations")
     }
 
     Column(
