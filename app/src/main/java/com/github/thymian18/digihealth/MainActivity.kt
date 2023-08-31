@@ -62,45 +62,51 @@ fun Title(text: String) {
 fun BottomRow(
     context: Context,
 ) {
-    BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primary,
-        actions = {
-            IconButton(
-                onClick = {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("HomeButton")
-            ) {
-                Icon(Icons.Filled.Home, contentDescription = "Home")
-            }
-            IconButton(
-                onClick = {
-                    val intent = Intent(context, SettingsActivity::class.java)
-                    context.startActivity(intent)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("ConfigurationsButton")
-            ) {
-                //Icon(Icons.Filled.Settings, contentDescription = "Configurations")
-                Icon(painter = painterResource(id = R.drawable.baseline_dataset_24), contentDescription = "Configurations")
-            }
-            IconButton(
-                onClick = {
-                    val intent = Intent(context, InfoActivity::class.java)
-                    context.startActivity(intent)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("InfoButton")
-            ) {
-                Icon(Icons.Filled.Info, contentDescription = "Info")
-            }
-        },
-    )
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        BottomAppBar(
+            containerColor = MaterialTheme.colorScheme.primary,
+            actions = {
+                IconButton(
+                    onClick = {
+                        val intent = Intent(context, MainActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("HomeButton")
+                ) {
+                    Icon(Icons.Filled.Home, contentDescription = "Home")
+                }
+                IconButton(
+                    onClick = {
+                        val intent = Intent(context, SettingsActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("ConfigurationsButton")
+                ) {
+                    //Icon(Icons.Filled.Settings, contentDescription = "Configurations")
+                    Icon(painter = painterResource(id = R.drawable.baseline_dataset_24), contentDescription = "Configurations")
+                }
+                IconButton(
+                    onClick = {
+                        val intent = Intent(context, InfoActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("InfoButton")
+                ) {
+                    Icon(Icons.Filled.Info, contentDescription = "Info")
+                }
+            },
+        )
+    }
+
 }
 
 @Composable
@@ -114,13 +120,7 @@ fun WelcomePage(context: Context) {
         WelcomeTextRow()
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-    ) {
-        BottomRow(context = context)
-    }
-
+    BottomRow(context = context)
 }
 
 @Composable
@@ -141,5 +141,4 @@ fun WelcomeTextRow() {
         )
     }
 }
-
 

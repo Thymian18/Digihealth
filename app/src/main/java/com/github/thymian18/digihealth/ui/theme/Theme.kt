@@ -48,13 +48,11 @@ fun DigihealthTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            println("Entering dynamic color scheme")
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
         darkTheme -> DarkColorScheme
         else -> {
-            println("Entering light color scheme")
             LightColorScheme
         }
     }
