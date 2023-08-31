@@ -37,7 +37,7 @@ class SettingsActivityTests {
         ActivityScenario.launch<SettingsActivity>(intent).use {
             composeTestRule.onNodeWithTag("HomeButton")
                 .assertExists()
-            composeTestRule.onNodeWithTag("SettingsButton")
+            composeTestRule.onNodeWithTag("ConfigurationsButton")
                 .assertExists()
             composeTestRule.onNodeWithTag("InfoButton")
                 .assertExists()
