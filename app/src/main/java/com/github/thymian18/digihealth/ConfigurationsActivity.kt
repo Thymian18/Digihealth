@@ -1,10 +1,8 @@
 package com.github.thymian18.digihealth
 
-import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -113,38 +111,16 @@ class SettingsActivity : ComponentActivity() {
             println("Start time: $startTimeString")
             println("End time: $endTimeString")
 
-            val usageEvents = usm.queryEvents(
+            usm.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY,
                 startTime,
-                startTime + 1000 * 60 * 60 * 12   // this is currentTime plus one day
-            )
-            val usageEvent = UsageEvents.Event()    // output object for getNextEvent
-            // TODO: no events are returned, why???
-            while (usageEvents?.hasNextEvent() == true) {
-                usageEvents.getNextEvent(usageEvent)
-                println("WE DID IT: ${usageEvent.packageName} ${usageEvent.timeStamp}")
-                Log.e("APP", "${usageEvent.packageName} ${usageEvent.timeStamp}")
+                startTime + 1000 * 60 * 60 * 12
+            ).forEach {
+                println("Package: ${it.packageName} Time: ${it.totalTimeInForeground}")
             }
+
         }
     }
-
-    /*
-    private fun checkUsageStatsPermission() : Boolean {
-        val appOpsManager = getSystemService(AppCompatActivity.APP_OPS_SERVICE) as AppOpsManager
-        // `AppOpsManager.checkOpNoThrow` is deprecated from Android Q
-        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            appOpsManager.unsafeCheckOpNoThrow(
-                "android:get_usage_stats",
-                Process.myUid(), packageName
-            )
-        }
-        else {
-            appOpsManager.checkOpNoThrow(
-                "android:get_usage_stats",
-                Process.myUid(), packageName
-            )
-        }
-        return mode == AppOpsManager.MODE_ALLOWED
-    }*/
 }
 
 
