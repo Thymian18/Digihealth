@@ -26,10 +26,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
 import com.github.thymian18.digihealth.ui.theme.DigihealthTheme
+import java.util.Calendar
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 class SettingsActivity : ComponentActivity() {
+
+    private lateinit var usageStatsManager: UsageStatsManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val context = this
+
+        val usageStatsManagerFuture = CompletableFuture<UsageStatsManager>().thenApply {
+            getSystemService(context, UsageStatsManager::class.java).takeUnless { it == null }
+                ?: throw IllegalStateException("UsageStatsManager service not supported")
+        }
+
         setContent {
             DigihealthTheme(dynamicColor = false) {
                 // A surface container using the 'background' color from the theme
@@ -37,7 +50,8 @@ class SettingsActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ConfigurationsPage(this)
+                    println("UsageStatsManager initialized")
+                    ConfigurationsPage(context, usageStatsManagerFuture)
                 }
             }
         }
@@ -45,14 +59,14 @@ class SettingsActivity : ComponentActivity() {
 }
 
 @Composable
-fun ConfigurationsPage(context: Context) {
+fun ConfigurationsPage(context: Context, usageStatsManagerFuture: CompletableFuture<UsageStatsManager>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TitleAndTabs()
 
         // TODO: insert list of apps depending on selected tab
-        ScreenTimeList(context)
+        ScreenTimeList(usageStatsManagerFuture)
 
     }
 
@@ -91,28 +105,39 @@ private fun TitleAndTabs() {
 }
 
 @Composable
-private fun ScreenTimeList(context: Context) {
+private fun ScreenTimeList(usageStatsManagerFuture: CompletableFuture<UsageStatsManager>) {
     Column(
         horizontalAlignment = Alignment.Start
     ) {
-        val currentTime = System.currentTimeMillis()
-        val usageStatsManager = getSystemService(context, UsageStatsManager::class.java)
+        val calendar = Calendar.getInstance()
+        val startTime = System.currentTimeMillis() - 1000 * 60 * 60 * 12
+        calendar.timeInMillis = startTime
+        val startTimeString = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
+        calendar.timeInMillis = startTime + 1000 * 60 * 60 * 12
+        val endTimeString = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
 
-        println("UsageStatsManager: $usageStatsManager")
-        println("Current time: $currentTime")
-        println("Start time: ${currentTime - 1000 * 60 * 60 * 24}")
 
-        val usageEvents = usageStatsManager?.queryEvents(
-            currentTime - 1000 * 60 * 60 * 24,
-            currentTime
-        )
-        val usageEvent = UsageEvents.Event()
-        // TODO: no events are returned, why???
-        while (usageEvents?.hasNextEvent() == true) {
-            usageEvents.getNextEvent(usageEvent)
-            println("${usageEvent.packageName} ${usageEvent.timeStamp}")
-            Log.e("APP", "${usageEvent.packageName} ${usageEvent.timeStamp}")
-        }
+        val usm = usageStatsManagerFuture.get(5, TimeUnit.SECONDS)
+        println("UsageStatsManager: $usm")
+
+       /* usageStatsManagerFuture.thenAccept {
+            println("Future completed")
+            *//*println("UsageStatsManager: $it")
+            println("Start time: $startTimeString")
+            println("End time: $endTimeString")
+
+            val usageEvents = it.queryEvents(
+                startTime,
+                startTime + 1000 * 60 * 60 * 12   // this is currentTime plus one day
+            )
+            val usageEvent = UsageEvents.Event()    // output object for getNextEvent
+            // TODO: no events are returned, why???
+            while (usageEvents?.hasNextEvent() == true) {
+                usageEvents.getNextEvent(usageEvent)
+                println("WE DID IT: ${usageEvent.packageName} ${usageEvent.timeStamp}")
+                Log.e("APP", "${usageEvent.packageName} ${usageEvent.timeStamp}")
+            }*//*
+        }*/
     }
 }
 

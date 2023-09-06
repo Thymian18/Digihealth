@@ -1,10 +1,19 @@
 package com.github.thymian18.digihealth
 
+import android.Manifest
+import android.app.AppOpsManager
+import android.app.AppOpsManager.MODE_ALLOWED
+import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Process
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,22 +39,52 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.thymian18.digihealth.ui.theme.DigihealthTheme
 
+
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            DigihealthTheme(dynamicColor = false) {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    WelcomePage(this)
+
+        if (!getGrantStatus(this)) {
+            setContent {
+                Button(onClick = { startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)) }) {
+                    Text(text = "Grant access to usage data")
+                }
+            }
+        } else {
+            setContent {
+                DigihealthTheme(dynamicColor = false) {
+                    // A surface container using the 'background' color from the theme
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        WelcomePage(this)
+                    }
                 }
             }
         }
+
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun getGrantStatus(context: Context): Boolean {
+        val appOps = context
+            .getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.unsafeCheckOpNoThrow(
+            OPSTR_GET_USAGE_STATS,
+            Process.myUid(), context.packageName
+        )
+        return if (mode == AppOpsManager.MODE_DEFAULT) {
+            context.checkCallingOrSelfPermission(Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            mode == MODE_ALLOWED
+        }
     }
 }
+
+
 
 @Composable
 fun Title(text: String) {
