@@ -27,21 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
 import com.github.thymian18.digihealth.ui.theme.DigihealthTheme
 import java.util.Calendar
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
 class SettingsActivity : ComponentActivity() {
 
-    private lateinit var usageStatsManager: UsageStatsManager
+    private lateinit var usm: UsageStatsManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val context = this
-
-        val usageStatsManagerFuture = CompletableFuture<UsageStatsManager>().thenApply {
-            getSystemService(context, UsageStatsManager::class.java).takeUnless { it == null }
-                ?: throw IllegalStateException("UsageStatsManager service not supported")
-        }
+        usm = getSystemService(context, UsageStatsManager::class.java).takeUnless { it == null }
+            ?: throw IllegalStateException("UsageStatsManager service not supported")
 
         setContent {
             DigihealthTheme(dynamicColor = false) {
@@ -50,83 +45,75 @@ class SettingsActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    println("UsageStatsManager initialized")
-                    ConfigurationsPage(context, usageStatsManagerFuture)
+                    ConfigurationsPage(context)
                 }
             }
         }
     }
-}
 
-@Composable
-fun ConfigurationsPage(context: Context, usageStatsManagerFuture: CompletableFuture<UsageStatsManager>) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TitleAndTabs()
+    @Composable
+    fun ConfigurationsPage(context: Context) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TitleAndTabs()
 
-        // TODO: insert list of apps depending on selected tab
-        ScreenTimeList(usageStatsManagerFuture)
+            // TODO: insert list of apps depending on selected tab
+            ScreenTimeList()
 
+        }
+
+        BottomRow(context = context)
     }
 
-    BottomRow(context = context)
-}
-
-enum class Tab(val title: String) {
-    TIME("Time"),
-    LAUNCHES("Launches");
-}
-
-@Composable
-private fun TitleAndTabs() {
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-    Title(text = "Configurations")
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-
-    var selectedTab by remember { mutableStateOf(Tab.TIME) }
-
-    TabRow(
-        selectedTabIndex = selectedTab.ordinal,
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.primary
-    ) {
-        Tab(
-            selected = selectedTab == Tab.TIME,
-            onClick = { selectedTab = Tab.TIME },
-            text = { Text(Tab.TIME.title) }
-        )
-        Tab(
-            selected = selectedTab == Tab.LAUNCHES,
-            onClick = { selectedTab = Tab.LAUNCHES },
-            text = { Text(Tab.LAUNCHES.title) }
-        )
+    enum class Tab(val title: String) {
+        TIME("Time"),
+        LAUNCHES("Launches");
     }
-}
 
-@Composable
-private fun ScreenTimeList(usageStatsManagerFuture: CompletableFuture<UsageStatsManager>) {
-    Column(
-        horizontalAlignment = Alignment.Start
-    ) {
-        val calendar = Calendar.getInstance()
-        val startTime = System.currentTimeMillis() - 1000 * 60 * 60 * 12
-        calendar.timeInMillis = startTime
-        val startTimeString = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
-        calendar.timeInMillis = startTime + 1000 * 60 * 60 * 12
-        val endTimeString = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
+    @Composable
+    private fun TitleAndTabs() {
+        Spacer(modifier = Modifier.padding(top = 20.dp))
+        Title(text = "Configurations")
+        Spacer(modifier = Modifier.padding(top = 20.dp))
 
+        var selectedTab by remember { mutableStateOf(Tab.TIME) }
 
-        val usm = usageStatsManagerFuture.get(5, TimeUnit.SECONDS)
-        println("UsageStatsManager: $usm")
+        TabRow(
+            selectedTabIndex = selectedTab.ordinal,
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.primary
+        ) {
+            Tab(
+                selected = selectedTab == Tab.TIME,
+                onClick = { selectedTab = Tab.TIME },
+                text = { Text(Tab.TIME.title) }
+            )
+            Tab(
+                selected = selectedTab == Tab.LAUNCHES,
+                onClick = { selectedTab = Tab.LAUNCHES },
+                text = { Text(Tab.LAUNCHES.title) }
+            )
+        }
+    }
 
-       /* usageStatsManagerFuture.thenAccept {
-            println("Future completed")
-            *//*println("UsageStatsManager: $it")
+    @Composable
+    private fun ScreenTimeList() {
+        Column(
+            horizontalAlignment = Alignment.Start
+        ) {
+            val calendar = Calendar.getInstance()
+            val startTime = System.currentTimeMillis() - 1000 * 60 * 60 * 12
+            calendar.timeInMillis = startTime
+            val startTimeString = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
+            calendar.timeInMillis = startTime + 1000 * 60 * 60 * 12
+            val endTimeString = "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${calendar.get(Calendar.SECOND)}"
+
+            println("USM: $usm")
             println("Start time: $startTimeString")
             println("End time: $endTimeString")
 
-            val usageEvents = it.queryEvents(
+            val usageEvents = usm.queryEvents(
                 startTime,
                 startTime + 1000 * 60 * 60 * 12   // this is currentTime plus one day
             )
@@ -136,26 +123,28 @@ private fun ScreenTimeList(usageStatsManagerFuture: CompletableFuture<UsageStats
                 usageEvents.getNextEvent(usageEvent)
                 println("WE DID IT: ${usageEvent.packageName} ${usageEvent.timeStamp}")
                 Log.e("APP", "${usageEvent.packageName} ${usageEvent.timeStamp}")
-            }*//*
-        }*/
+            }
+        }
     }
+
+    /*
+    private fun checkUsageStatsPermission() : Boolean {
+        val appOpsManager = getSystemService(AppCompatActivity.APP_OPS_SERVICE) as AppOpsManager
+        // `AppOpsManager.checkOpNoThrow` is deprecated from Android Q
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOpsManager.unsafeCheckOpNoThrow(
+                "android:get_usage_stats",
+                Process.myUid(), packageName
+            )
+        }
+        else {
+            appOpsManager.checkOpNoThrow(
+                "android:get_usage_stats",
+                Process.myUid(), packageName
+            )
+        }
+        return mode == AppOpsManager.MODE_ALLOWED
+    }*/
 }
 
-/*
-private fun checkUsageStatsPermission() : Boolean {
-    val appOpsManager = getSystemService(AppCompatActivity.APP_OPS_SERVICE) as AppOpsManager
-    // `AppOpsManager.checkOpNoThrow` is deprecated from Android Q
-    val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        appOpsManager.unsafeCheckOpNoThrow(
-            "android:get_usage_stats",
-            Process.myUid(), packageName
-        )
-    }
-    else {
-        appOpsManager.checkOpNoThrow(
-            "android:get_usage_stats",
-            Process.myUid(), packageName
-        )
-    }
-    return mode == AppOpsManager.MODE_ALLOWED
-}*/
+
